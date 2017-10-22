@@ -8,7 +8,8 @@ use GuzzleHttp\Handler\CurlHandler;
 class WebAPI
 {
   const BASE_URI = 'http://www.land.mlit.go.jp/';
-  const CITY_PATH = 'webland/api/CitySearch?area=';
+  const CITY_PATH = 'webland/api/CitySearch?';
+  const TRADE_PATH = 'webland/api/TradeListSearch?';
   const AREA = [
     "01" => "北海道",
     "02" => "青森県",
@@ -78,8 +79,25 @@ class WebAPI
 
   public function getCityCode($areaCode)
   {
-    $response = $this->client->request( 'GET', \LandPrice\WebAPI::CITY_PATH . $areaCode );
-    $json = json_decode( (string) $response->getBody() );
+    $response = $this->client->request( 'GET', \LandPrice\WebAPI::CITY_PATH
+      . 'area=' . $areaCode );
+    return $this->getJson($response);
+  }
+
+  public function getTradeHistory($area, $city, $from, $to)
+  {
+    $response = $this->client->request( 'GET', \LandPrice\WebAPI::TRADE_PATH
+     .  'area=' . $area
+     . '&city=' . $city
+     . '&from=' . $from
+     . '&to='   . $to
+    );
+    return $this->getJson($response);
+  }
+
+  private function getJson($resp)
+  {
+    $json = json_decode( (string) $resp->getBody() );
     return $json->data;
   }
 }
