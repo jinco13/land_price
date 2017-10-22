@@ -25,8 +25,10 @@ class WebAPITest extends \PHPUnit_Framework_TestCase
       ["Type" => "中古マンション等","MunicipalityCode" => "13103","Prefecture" => "東京都","Municipality" => "港区","DistrictName" => "赤坂","TradePrice" => "92000000","FloorPlan" => "１ＬＤＫ","Area" => "50","BuildingYear" => "平成20年","Structure" => "ＲＣ","Use" => "住宅","Purpose" => "住宅","CityPlanning" => "商業地域","CoverageRatio" => "80","FloorAreaRatio" => "400","Period" => "平成29年第１四半期","Remarks" => "改装済を購入"],
     ]);
     $this->setMockHandler($mockData);
-    $this->assertEquals(count($this->target->getTradeHistory('14','13103','20171','20174')), 2);
+    $result = $this->target->getTradeHistory('13','13228','20171','20171');
+    $this->assertEquals(count($result), 2);
   }
+
   public function testGetCityCodeFromAPI()
   {
     $mockData = array("data" => [
@@ -48,6 +50,7 @@ class WebAPITest extends \PHPUnit_Framework_TestCase
 
   public function testTokyoAreaCode()
   {
+    $this->target = new WebAPI();
     $this->assertEquals($this->target->getAreaCode('東京都'), "13");
     $this->assertEquals($this->target->getAreaCode('神奈川県'), "14");
   }

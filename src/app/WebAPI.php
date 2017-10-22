@@ -79,25 +79,29 @@ class WebAPI
 
   public function getCityCode($areaCode)
   {
-    $response = $this->client->request( 'GET', \LandPrice\WebAPI::CITY_PATH
-      . 'area=' . $areaCode );
+    $response = $this->client->request( 'GET',
+      \LandPrice\WebAPI::CITY_PATH . 'area=' . $areaCode );
     return $this->getJson($response);
   }
 
   public function getTradeHistory($area, $city, $from, $to)
   {
-    $response = $this->client->request( 'GET', \LandPrice\WebAPI::TRADE_PATH
-     .  'area=' . $area
-     . '&city=' . $city
-     . '&from=' . $from
-     . '&to='   . $to
+    $list = array();
+    $response = $this->client->request( 'GET',
+        \LandPrice\WebAPI::TRADE_PATH
+        . 'area=' . $area . '&city=' . $city . '&from=' . $from . '&to=' . $to
     );
-    return $this->getJson($response);
+
+    $data = $this->getJson($response);
+    foreach($data as $d){
+      $list[] = new Trade($d);
+    }
+    return $list;
   }
 
   private function getJson($resp)
   {
-    $json = json_decode( (string) $resp->getBody() );
-    return $json->data;
+    $json = json_decode( $resp->getBody() , true);
+    return $json['data'];
   }
 }
