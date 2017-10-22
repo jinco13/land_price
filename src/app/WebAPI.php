@@ -1,11 +1,14 @@
 <?php
 namespace LandPrice;
 
-use \GuzzleHttp\Client;
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Handler\CurlHandler;
 
 class WebAPI
 {
-  const AREA_URL = 'http://www.land.mlit.go.jp/webland/api/CitySearch?';
+  const BASE_URI = 'http://www.land.mlit.go.jp/';
+  const CITY_PATH = 'webland/api/CitySearch?area=';
   const AREA = [
     "01" => "北海道",
     "02" => "青森県",
@@ -55,13 +58,28 @@ class WebAPI
     "46" => "鹿児島県",
     "47" => "沖縄県",
   ];
-  public function __construct()
+
+  public function __construct($stack = null)
   {
-    $this->client = new \GuzzleHttp\Client();
+    if( isset($stack) == false ){
+      $handler = new CurlHandler();
+      $stack = HandlerStack::create($handler);
+    }
+    $this->client = new \GuzzleHttp\Client([
+      'base_uri' => \LandPrice\WebAPI::BASE_URI,
+      'handler' => $stack,
+    ]);
   }
 
   public function getAreaCode($area)
   {
     return array_flip(\LandPrice\WebAPI::AREA)[$area];
+  }
+
+  public function getCityCode($areaCode)
+  {
+    $response = $this->client->request( 'GET', \LandPrice\WebAPI::CITY_PATH . $areaCode );
+    $json = json_decode( (string) $response->getBody() );
+    return $json->data;
   }
 }
