@@ -11,6 +11,7 @@ class TradeTest extends \PHPUnit_Framework_TestCase
   public function testInstanceRegion()
   {
     $this->assertEquals('住宅地', $this->target->region);
+    $this->assertEquals('60', $this->target->coverageRatio);
   }
 
   public function testInstance()
